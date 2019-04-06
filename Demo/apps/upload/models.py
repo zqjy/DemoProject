@@ -8,6 +8,6 @@ class PicModel(models.Model):
     image = models.ImageField(upload_to='img')
 
     class Meta:
-        db_table = 'df_goods_type'
-        verbose_name = '商品种类'
+        db_table = 'd_pic_model'
+        verbose_name = '上传图片'
         verbose_name_plural = verbose_name
