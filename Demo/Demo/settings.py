@@ -33,31 +33,38 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
+    # 'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'DjangoUeditor',
-    'crispy_forms',
-    'rest_framework',  # rest framework
+    'corsheaders',  # 跨域问题
+    'DjangoUeditor',  # 富文本编辑器
+    'crispy_forms',  # xadmin
+    'xadmin',  # xadmin
     'django_filters',  # 过滤器
+    'rest_framework',  # rest framework
+    'rest_framework.authtoken',  # 用户权限 添加后需要makemigretins migrate 生成一张token表
     'upload.apps.UploadConfig',
     'users.apps.UsersConfig',
     'rest.apps.RestConfig',
+    'trade.apps.TradeConfig',
+    'user_operation.apps.UserOperationConfig',
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',  # 跨域问题中间件配置  尽量放在csrf之前
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',  # 防止跨站攻击 前后端分离无需考虑  因为已经跨域
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CORS_ORIGIN_ALLOW_ALL = True  # 跨域问题配置
 ROOT_URLCONF = 'Demo.urls'
 
 TEMPLATES = [
@@ -89,7 +96,7 @@ DATABASES = {
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': 'root',
-        'OPTIONS': { 'init_command': 'SET default_storage_engine=INNODB;' },
+        'OPTIONS': {'init_command': 'SET default_storage_engine=INNODB;'},
     }
 }
 
@@ -148,4 +155,29 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'ORDERING_PARAM': 'order',  # 排序参数名称
     'SEARCH_PARAM': 's',  # 搜索参数名称
+    'DEFAULT_AUTHENTICATION_CLASSES': (  # 用户权限配置
+        'rest_framework.authentication.BasicAuthentication',  # 浏览器调试使用
+        'rest_framework.authentication.SessionAuthentication',  # 浏览器调试使用
+        # 'rest_framework.authentication.TokenAuthentication',  # 前后端分离使用 全局token验证  不合理  被局部验证替代
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # JWT用户认证
+    ),
 }
+
+import datetime
+
+# JWT 配置
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),  # 过期时间
+    'JWT_AUTH_HEADER_PREFIX': 'JWT',  # 认证方式
+}
+
+# 自定义用户认证函数
+AUTHENTICATION_BACKENDS = (
+    'apps.users.views.CustomBackend',
+)
+
+# 手机号码正则表达式
+REGEX_MOBILE = "^1[358]\d{9}$|^147\d{8}$|^176\d{8}$"
+
+#云片网设置
+APIKEY = "b0402994353b2fc629ac4ef6501d079f"

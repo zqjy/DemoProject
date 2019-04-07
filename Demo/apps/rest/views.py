@@ -7,6 +7,7 @@ from rest_framework import generics
 from rest_framework.pagination import PageNumberPagination
 from rest_framework import viewsets
 from rest_framework import filters
+from rest_framework.authentication import TokenAuthentication
 from django_filters.rest_framework import DjangoFilterBackend
 
 from apps.rest.models import Goods
@@ -22,16 +23,17 @@ class GoodsPagination(PageNumberPagination):
     max_page_size = 100
 
 
-class GoodListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+class GoodListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     商品列表
     """
     queryset = Goods.objects.all()  # 已配置分页  # 被get_queryset() 替代  # 结合django-filter使用
     serializer_class = GoodsSerializer  # 指定序列化类
     pagination_class = GoodsPagination  # 指定自定义分页类
+    # authentication_classes = (TokenAuthentication, )  # 配置用户token验证
     # filter_backends = (DjangoFilterBackend,)  # 设置过滤类
-    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)  # 设置过滤类 配置drf的过滤器
-                                                                                            # 配置排序过滤器
+    # 设置过滤类 配置drf的过滤器 配置排序过滤器
+    filter_backends = (DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter)
     # filter_fields = ('name', 'shop_price')  # 设置过滤属性 # 被自定义过滤替换
     filter_class = GoodsFilter  # 配置自定义过滤类
     search_fields = ('name', 'goods_brief', 'goods_desc')  # 配置搜索的字段
@@ -41,7 +43,6 @@ class GoodListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     # '@' Full-text search. (Currently only supported Django's MySQL backend.)
     # '$' Regex search.
 
-
     # def get_queryset(self):
     #     queryset = Goods.objects.all()
     #     # 获取url参数中传过来的"要查询的商品的价格阈值",如果没有传就设置为0
@@ -50,7 +51,7 @@ class GoodListViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     #         queryset = queryset.filter(shop_price__gt=int(price_min))
     #
     #     return queryset
-        # return Goods.objects.filter(shop_price__gt=100)
+    # return Goods.objects.filter(shop_price__gt=100)
 
 
 class GoodListView(generics.ListAPIView):

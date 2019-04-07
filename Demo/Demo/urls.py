@@ -13,21 +13,32 @@ Including another URLconf
     1. Import the include() function: from django.conf.urls import url, include
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
+import xadmin
 from django.conf.urls import url, include
 from django.contrib import admin
 from Demo.settings import MEDIA_ROOT
 from django.views.static import serve
 
 from rest_framework.documentation import include_docs_urls
+from rest_framework.authtoken import views
+from rest_framework_jwt.views import obtain_jwt_token
+
 
 urlpatterns = [
-    url(r'^admin/', admin.site.urls),
-    url(r'^upload/', include('apps.upload.urls', namespace='upload')),
-    url(r'^rest/', include('apps.rest.urls', namespace='rest')),
+    url(r'^xadmin/', xadmin.site.urls),
+    # 用户登录测试配置
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     # 访问本地文件
     url(r'^media/(?P<path>.*)$', serve, {"document_root": MEDIA_ROOT}),
-
-    url(r'^goods/', include('apps.rest.urls', namespace='goods')),
     # 文档
-    url(r'docs/', include_docs_urls(title='小样工程'))
+    url(r'docs/', include_docs_urls(title='小样工程')),
+    # drf自带的用户认证返回token
+    url(r'^api_token_auth/', views.obtain_auth_token),
+    #jwt认证接口
+    url(r'^jwt_auth/', obtain_jwt_token),
+
+    url(r'^users/', include('apps.users.urls', namespace='users')),
+    url(r'^goods/', include('apps.rest.urls', namespace='goods')),
+    url(r'^upload/', include('apps.upload.urls', namespace='upload')),
+    url(r'^rest/', include('apps.rest.urls', namespace='rest')),
 ]
