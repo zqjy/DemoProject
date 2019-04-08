@@ -92,7 +92,8 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'db_demo',
-        'HOST': '192.168.31.199',
+        # 'HOST': '192.168.31.199',
+        'HOST': '192.168.1.6',
         'PORT': 3306,
         'USER': 'root',
         'PASSWORD': 'root',
@@ -159,7 +160,7 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.BasicAuthentication',  # 浏览器调试使用
         'rest_framework.authentication.SessionAuthentication',  # 浏览器调试使用
         # 'rest_framework.authentication.TokenAuthentication',  # 前后端分离使用 全局token验证  不合理  被局部验证替代
-        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # JWT用户认证
+        # 'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # JWT用户认证
     ),
 }
 

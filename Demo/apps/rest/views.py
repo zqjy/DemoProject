@@ -25,6 +25,7 @@ class GoodsPagination(PageNumberPagination):
 
 class GoodListViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
+    list:
     商品列表
     """
     queryset = Goods.objects.all()  # 已配置分页  # 被get_queryset() 替代  # 结合django-filter使用
